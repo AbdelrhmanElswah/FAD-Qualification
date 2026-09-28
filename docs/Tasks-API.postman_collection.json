@@ -1,0 +1,312 @@
+{
+  "info": {
+    "name": "FAD Qualification - Tasks API",
+    "description": "REST API for a simple task management system.\n\nSet the `baseUrl` variable to match your environment. `taskId` is filled in automatically by the test script on \"Create Task\", so you can run the folder top to bottom.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://fad-qualification.test/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "taskId",
+      "value": "1",
+      "type": "string"
+    }
+  ],
+  "auth": null,
+  "item": [
+    {
+      "name": "List tasks",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Accept", "value": "application/json" }],
+        "url": {
+          "raw": "{{baseUrl}}/tasks",
+          "host": ["{{baseUrl}}"],
+          "path": ["tasks"]
+        },
+        "description": "Returns a paginated list of tasks, newest first."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('responds 200', () => pm.response.to.have.status(200));",
+              "pm.test('uses the success envelope', () => {",
+              "    const body = pm.response.json();",
+              "    pm.expect(body.success).to.be.true;",
+              "    pm.expect(body.data).to.be.an('array');",
+              "    pm.expect(body.meta).to.have.property('total');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "List tasks (filtered, sorted, paginated)",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Accept", "value": "application/json" }],
+        "url": {
+          "raw": "{{baseUrl}}/tasks?search=&is_completed=false&sort_by=title&sort_direction=asc&per_page=10",
+          "host": ["{{baseUrl}}"],
+          "path": ["tasks"],
+          "query": [
+            { "key": "search", "value": "", "description": "Partial match on title and description" },
+            { "key": "is_completed", "value": "false", "description": "true | false | 1 | 0" },
+            { "key": "sort_by", "value": "title", "description": "id | title | is_completed | created_at | updated_at" },
+            { "key": "sort_direction", "value": "asc", "description": "asc | desc" },
+            { "key": "per_page", "value": "10", "description": "1 to 100" }
+          ]
+        },
+        "description": "Every query parameter is optional and validated."
+      },
+      "response": []
+    },
+    {
+      "name": "Create task",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Accept", "value": "application/json" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"title\": \"Ship the tasks API\",\n    \"description\": \"Repository, service and resource layers.\",\n    \"is_completed\": false\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/tasks",
+          "host": ["{{baseUrl}}"],
+          "path": ["tasks"]
+        },
+        "description": "title is required (3-255 chars). description and is_completed are optional."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('responds 201', () => pm.response.to.have.status(201));",
+              "const body = pm.response.json();",
+              "pm.test('returns the created task', () => {",
+              "    pm.expect(body.success).to.be.true;",
+              "    pm.expect(body.data).to.have.property('id');",
+              "});",
+              "if (body.data && body.data.id) {",
+              "    pm.collectionVariables.set('taskId', body.data.id);",
+              "}"
+            ]
+          }
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "Create task - validation error (422)",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Accept", "value": "application/json" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"title\": \"x\",\n    \"is_completed\": \"maybe\"\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/tasks",
+          "host": ["{{baseUrl}}"],
+          "path": ["tasks"]
+        },
+        "description": "Demonstrates the error envelope: title is too short and is_completed is not a boolean."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('responds 422', () => pm.response.to.have.status(422));",
+              "pm.test('lists the invalid fields', () => {",
+              "    const body = pm.response.json();",
+              "    pm.expect(body.success).to.be.false;",
+              "    pm.expect(body.errors).to.have.property('title');",
+              "    pm.expect(body.errors).to.have.property('is_completed');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "Get task",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Accept", "value": "application/json" }],
+        "url": {
+          "raw": "{{baseUrl}}/tasks/{{taskId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["tasks", "{{taskId}}"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('responds 200', () => pm.response.to.have.status(200));",
+              "pm.test('returns the requested task', () => {",
+              "    const body = pm.response.json();",
+              "    pm.expect(String(body.data.id)).to.eql(String(pm.collectionVariables.get('taskId')));",
+              "});"
+            ]
+          }
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "Get task - not found (404)",
+      "request": {
+        "method": "GET",
+        "header": [{ "key": "Accept", "value": "application/json" }],
+        "url": {
+          "raw": "{{baseUrl}}/tasks/424242",
+          "host": ["{{baseUrl}}"],
+          "path": ["tasks", "424242"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('responds 404', () => pm.response.to.have.status(404));",
+              "pm.test('reports failure', () => pm.expect(pm.response.json().success).to.be.false);"
+            ]
+          }
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "Update task (PUT)",
+      "request": {
+        "method": "PUT",
+        "header": [
+          { "key": "Accept", "value": "application/json" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"title\": \"Ship the tasks API v2\",\n    \"description\": \"Now with docs and a Postman collection.\",\n    \"is_completed\": true\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/tasks/{{taskId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["tasks", "{{taskId}}"]
+        },
+        "description": "PUT requires title. Fields you omit keep their stored value; send description as null to clear it."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('responds 200', () => pm.response.to.have.status(200));",
+              "pm.test('applies the update', () => {",
+              "    const body = pm.response.json();",
+              "    pm.expect(body.data.title).to.eql('Ship the tasks API v2');",
+              "    pm.expect(body.data.is_completed).to.be.true;",
+              "});"
+            ]
+          }
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "Update task partially (PATCH)",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          { "key": "Accept", "value": "application/json" },
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n    \"is_completed\": false\n}",
+          "options": { "raw": { "language": "json" } }
+        },
+        "url": {
+          "raw": "{{baseUrl}}/tasks/{{taskId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["tasks", "{{taskId}}"]
+        },
+        "description": "PATCH makes every field optional, so the title and description are left as they are."
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('responds 200', () => pm.response.to.have.status(200));",
+              "pm.test('only the sent field changed', () => {",
+              "    const body = pm.response.json();",
+              "    pm.expect(body.data.is_completed).to.be.false;",
+              "    pm.expect(body.data.title).to.be.a('string').and.not.empty;",
+              "});"
+            ]
+          }
+        }
+      ],
+      "response": []
+    },
+    {
+      "name": "Delete task",
+      "request": {
+        "method": "DELETE",
+        "header": [{ "key": "Accept", "value": "application/json" }],
+        "url": {
+          "raw": "{{baseUrl}}/tasks/{{taskId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["tasks", "{{taskId}}"]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('responds 200', () => pm.response.to.have.status(200));",
+              "pm.test('confirms deletion', () => {",
+              "    const body = pm.response.json();",
+              "    pm.expect(body.success).to.be.true;",
+              "    pm.expect(body.message).to.eql('Task deleted successfully.');",
+              "});"
+            ]
+          }
+        }
+      ],
+      "response": []
+    }
+  ]
+}
