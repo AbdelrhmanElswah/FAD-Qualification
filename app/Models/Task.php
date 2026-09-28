@@ -24,32 +24,18 @@ class Task extends Model
     /** @use HasFactory<TaskFactory> */
     use HasFactory;
 
-    /**
-     * The attributes that are searchable through the API.
-     *
-     * @var list<string>
-     */
+    /** @var list<string> */
     public const array SEARCHABLE = ['title', 'description'];
 
-    /**
-     * The columns the API is allowed to sort by.
-     *
-     * @var list<string>
-     */
+    /** @var list<string> */
     public const array SORTABLE = ['id', 'title', 'is_completed', 'created_at', 'updated_at'];
 
-    /**
-     * Default values so a freshly created task is never returned with a null flag.
-     *
-     * @var array<string, mixed>
-     */
+    /** @var array<string, mixed> */
     protected $attributes = [
         'is_completed' => false,
     ];
 
     /**
-     * Get the attributes that should be cast.
-     *
      * @return array<string, string>
      */
     protected function casts(): array

@@ -13,22 +13,12 @@ use App\Http\Responses\Concerns\InteractsWithApiResponses;
 use App\Services\TaskService;
 use Illuminate\Http\JsonResponse;
 
-/**
- * Thin HTTP layer for the task resource.
- *
- * Validation lives in the form requests, business rules in the service, database
- * access in the repository and serialisation in the resource, so each action here
- * is a single expression.
- */
 final class TaskController extends Controller
 {
     use InteractsWithApiResponses;
 
     public function __construct(private readonly TaskService $tasks) {}
 
-    /**
-     * GET /api/v1/tasks
-     */
     public function index(IndexTaskRequest $request): JsonResponse
     {
         $tasks = $this->tasks->list($request->filters(), $request->perPage());
@@ -39,9 +29,6 @@ final class TaskController extends Controller
         );
     }
 
-    /**
-     * POST /api/v1/tasks
-     */
     public function store(StoreTaskRequest $request): JsonResponse
     {
         $task = $this->tasks->create($request->toData());
@@ -52,9 +39,6 @@ final class TaskController extends Controller
         );
     }
 
-    /**
-     * GET /api/v1/tasks/{id}
-     */
     public function show(int $id): JsonResponse
     {
         return $this->okResponse(
@@ -63,9 +47,6 @@ final class TaskController extends Controller
         );
     }
 
-    /**
-     * PUT|PATCH /api/v1/tasks/{id}
-     */
     public function update(UpdateTaskRequest $request, int $id): JsonResponse
     {
         $task = $this->tasks->update($id, $request->toData());
@@ -76,9 +57,6 @@ final class TaskController extends Controller
         );
     }
 
-    /**
-     * DELETE /api/v1/tasks/{id}
-     */
     public function destroy(int $id): JsonResponse
     {
         $this->tasks->delete($id);

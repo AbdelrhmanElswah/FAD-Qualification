@@ -8,16 +8,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Resources\Json\JsonResource;
 use Symfony\Component\HttpFoundation\Response;
 
-/**
- * Builds the single success envelope used by every endpoint:
- *
- *     { "success": true, "message": "...", "data": ..., "meta": {...} }
- */
 trait SendsSuccessResponses
 {
     /**
-     * Return a 200 response.
-     *
      * @param  array<string, mixed>  $additional
      */
     protected function okResponse(
@@ -29,8 +22,6 @@ trait SendsSuccessResponses
     }
 
     /**
-     * Return a 201 response for a freshly created resource.
-     *
      * @param  array<string, mixed>  $additional
      */
     protected function createdResponse(
@@ -42,16 +33,6 @@ trait SendsSuccessResponses
     }
 
     /**
-     * Return a 204 response with no body.
-     */
-    protected function noContentResponse(): JsonResponse
-    {
-        return new JsonResponse(status: Response::HTTP_NO_CONTENT);
-    }
-
-    /**
-     * Return an arbitrary success response.
-     *
      * @param  array<string, mixed>  $additional
      */
     protected function successResponse(
@@ -72,9 +53,6 @@ trait SendsSuccessResponses
     }
 
     /**
-     * Unwrap a resource so its `data`, `links` and `meta` keys sit beside the envelope
-     * instead of being nested inside another `data` key.
-     *
      * @return array<string, mixed>
      */
     private function flattenResource(JsonResource $resource): array

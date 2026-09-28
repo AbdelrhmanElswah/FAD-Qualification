@@ -10,7 +10,7 @@ use Illuminate\Database\Seeder;
 class TaskSeeder extends Seeder
 {
     /**
-     * Seed a small, predictable set of tasks for manual API exploration.
+     * Run the database seeds.
      */
     public function run(): void
     {

@@ -10,8 +10,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
 /**
- * Eloquent implementation of the shared CRUD behaviour.
- *
  * @template TModel of Model
  *
  * @implements RepositoryInterface<TModel>
@@ -71,8 +69,6 @@ abstract class BaseRepository implements RepositoryInterface
     }
 
     /**
-     * A fresh query builder for the managed model.
-     *
      * @return Builder<TModel>
      */
     protected function query(): Builder

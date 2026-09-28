@@ -36,9 +36,6 @@ final class StoreTaskRequest extends ApiRequest
         $this->normalizeBooleans(['is_completed']);
     }
 
-    /**
-     * The validated payload as a domain object.
-     */
     public function toData(): TaskData
     {
         return TaskData::fromValidated($this->validated());

@@ -8,8 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 
 /**
- * Persistence operations shared by every repository.
- *
  * @template TModel of Model
  */
 interface RepositoryInterface

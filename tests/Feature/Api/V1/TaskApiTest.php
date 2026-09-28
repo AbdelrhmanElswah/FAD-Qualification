@@ -15,8 +15,6 @@ final class TaskApiTest extends TestCase
 
     private const string ENDPOINT = '/api/v1/tasks';
 
-    // ---------------------------------------------------------------- index
-
     #[Test]
     public function it_lists_tasks_in_the_standard_envelope(): void
     {
@@ -90,8 +88,6 @@ final class TaskApiTest extends TestCase
             ->assertJsonValidationErrors('sort_by');
     }
 
-    // ----------------------------------------------------------------- show
-
     #[Test]
     public function it_shows_a_single_task(): void
     {
@@ -115,8 +111,6 @@ final class TaskApiTest extends TestCase
                 'message' => 'Task [999] was not found.',
             ]);
     }
-
-    // ---------------------------------------------------------------- store
 
     #[Test]
     public function it_creates_a_task(): void
@@ -172,8 +166,6 @@ final class TaskApiTest extends TestCase
             ->assertUnprocessable()
             ->assertJsonValidationErrors(['title', 'description', 'is_completed']);
     }
-
-    // --------------------------------------------------------------- update
 
     #[Test]
     public function it_replaces_a_task_with_put(): void
@@ -243,8 +235,6 @@ final class TaskApiTest extends TestCase
             ->assertJsonPath('success', false);
     }
 
-    // -------------------------------------------------------------- destroy
-
     #[Test]
     public function it_deletes_a_task(): void
     {
@@ -267,8 +257,6 @@ final class TaskApiTest extends TestCase
             ->assertNotFound()
             ->assertJsonPath('success', false);
     }
-
-    // ------------------------------------------------------- routing errors
 
     #[Test]
     public function it_returns_a_json_error_for_an_unknown_endpoint(): void

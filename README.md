@@ -35,67 +35,70 @@ Run the suite with `php artisan test` and the formatter with `vendor/bin/pint`.
 
 ## Architecture
 
-The request flows in one direction, and each layer has a single job:
+A request passes through the layers in one direction:
 
 ```
-Route → FormRequest → Controller → Service → Repository → Eloquent
-                           ↓                     ↑
-                    JsonResource          RepositoryInterface
-                           ↓
-                  Response traits → JSON envelope
+Route -> FormRequest -> Controller -> Service -> Repository -> Eloquent
 ```
 
-| Layer                | Location                             | Responsibility                                                    |
-| -------------------- | ------------------------------------ | ----------------------------------------------------------------- |
-| Form requests        | `app/Http/Requests/Api/V1`           | Validate and normalise input, then hand back a DTO                |
-| Controller           | `app/Http/Controllers/Api/V1`        | Translate HTTP to a service call — one expression per action       |
-| Service              | `app/Services`                       | Business rules for the task use cases                             |
-| Repository           | `app/Repositories`                   | All database access, behind an interface                          |
-| DTOs                 | `app/DataTransferObjects`            | Immutable payload and filter objects passed between layers        |
-| Resource             | `app/Http/Resources`                 | The public JSON shape of a task                                   |
-| Response traits      | `app/Http/Responses/Concerns`        | The single success/error envelope                                 |
-| Exceptions           | `app/Exceptions`                     | Domain failures mapped to HTTP status codes                       |
+| Layer           | Location                      | Responsibility                                |
+| --------------- | ----------------------------- | --------------------------------------------- |
+| Form requests   | `app/Http/Requests/Api/V1`    | Validate input, then return a DTO             |
+| Controller      | `app/Http/Controllers/Api/V1` | Turn an HTTP call into a service call         |
+| Service         | `app/Services`                | Business rules for the task use cases         |
+| Repository      | `app/Repositories`            | Database access, behind an interface          |
+| DTOs            | `app/DataTransferObjects`     | Immutable payload and filter objects          |
+| Resource        | `app/Http/Resources`          | Public JSON shape of a task                   |
+| Response traits | `app/Http/Responses/Concerns` | Success and error envelopes                   |
+| Exceptions      | `app/Exceptions`              | Domain failures mapped to HTTP status codes   |
 
-### Patterns used and why
+### Patterns
 
-- **Repository pattern** — `TaskRepositoryInterface` is bound to `TaskRepository` in
-  `RepositoryServiceProvider`. `TaskService` depends on the interface, so the storage
-  engine can be swapped or faked without touching business logic. Shared CRUD lives in
-  an abstract `BaseRepository` so future repositories inherit it.
-- **Service layer** — keeps controllers free of business rules and makes the use cases
-  reusable from a command, queue job or another controller.
-- **DTOs** — `TaskData` carries a write payload and remembers *which* attributes the
-  client actually sent. That is what lets `PATCH` update one field without blanking the
-  others, while still allowing `description` to be cleared with an explicit `null`.
-  `TaskFilters` is a query object describing how a listing should be filtered and sorted.
-- **Traits for responses** — `SendsSuccessResponses` and `SendsErrorResponses` each own
-  one half of the API contract; `InteractsWithApiResponses` composes both for consumers
-  that need everything. Every response in the app goes through them, so the envelope
-  cannot drift between endpoints.
-- **Centralised exception handling** — `ApiExceptionRenderer` is registered in
-  `bootstrap/app.php` and converts validation failures, missing records, bad methods and
-  unexpected errors into the same error envelope. Controllers contain no `try`/`catch`,
-  and services raise intent-revealing exceptions like `TaskNotFoundException` instead of
-  returning null.
-- **API resources** — serialisation is separate from the database schema, so columns can
-  change without breaking the published contract.
+**Repository.** `TaskRepositoryInterface` is bound to `TaskRepository` in
+`RepositoryServiceProvider`. `TaskService` depends on the interface, so storage can be
+swapped or faked without changing business logic. Shared CRUD lives in an abstract
+`BaseRepository`.
+
+**Service layer.** Business rules sit outside the controller, which keeps the use cases
+callable from a command or queue job as well as from HTTP.
+
+**DTOs.** `TaskData` records which attributes the client sent, so a `PATCH` updates one
+field without blanking the rest, while `description` can still be cleared by sending an
+explicit `null`. `TaskFilters` describes how a listing is filtered and sorted.
+
+**Response traits.** `SendsSuccessResponses` and `SendsErrorResponses` build the two
+envelopes and `InteractsWithApiResponses` composes both. Every response goes through
+them, so the shape stays consistent across endpoints.
+
+**Centralised exceptions.** `ApiExceptionRenderer`, registered in `bootstrap/app.php`,
+converts validation failures, missing records, disallowed methods and unexpected errors
+into the error envelope. The controllers contain no `try`/`catch`, and the service raises
+`TaskNotFoundException` rather than returning null.
+
+**API resources.** `TaskResource` keeps the JSON contract independent of the database
+schema.
 
 ### Conventions
 
-- Strict types everywhere, `final` on classes not designed for extension, `readonly`
-  on value objects and injected dependencies.
-- The API is versioned under `/api/v1` so a future contract change is additive.
-- Sortable and searchable columns are allow-listed on the `Task` model, so `sort_by`
-  can never be pointed at an arbitrary column.
+- `declare(strict_types=1)` throughout, `final` where extension is not intended, and
+  `readonly` on value objects and injected dependencies.
+- Routes are versioned under `/api/v1`.
+- Searchable and sortable columns are allow-listed on the `Task` model, so `sort_by`
+  cannot be pointed at an arbitrary column.
 
 ## Tests
 
-27 tests / 98 assertions, run against an in-memory SQLite database.
+77 tests against an in-memory SQLite database.
 
-- `tests/Feature/Api/V1/TaskApiTest.php` — all five endpoints, filtering, search,
-  sorting, pagination, validation failures, 404s, 405s and the response envelopes.
-- `tests/Unit/DataTransferObjects/TaskDataTest.php` — the partial-update semantics
-  of `TaskData`.
+| Suite                                              | Covers                                                    |
+| -------------------------------------------------- | --------------------------------------------------------- |
+| `tests/Feature/Api/V1/TaskApiTest.php`             | All five endpoints end to end, including every error case |
+| `tests/Unit/Services/TaskServiceTest.php`          | Use cases against a mocked repository                     |
+| `tests/Unit/DataTransferObjects/TaskDataTest.php`  | Partial-update semantics                                  |
+| `tests/Unit/DataTransferObjects/TaskFiltersTest.php` | Filter parsing and defaults                             |
+| `tests/Unit/Http/Responses/ApiResponsesTest.php`   | Both response envelopes                                   |
+| `tests/Unit/Exceptions/ApiExceptionRendererTest.php` | Exception to status-code mapping                        |
+| `tests/Unit/Models/TaskTest.php`                   | Casts, defaults and mass-assignment rules                 |
 
 ```bash
 php artisan test

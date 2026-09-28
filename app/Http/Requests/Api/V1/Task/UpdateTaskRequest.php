@@ -10,12 +10,6 @@ use App\Http\Requests\Api\V1\ApiRequest;
 final class UpdateTaskRequest extends ApiRequest
 {
     /**
-     * PUT expects the client to send the title it wants the task to end up with;
-     * PATCH accepts any subset of the fields.
-     *
-     * Either way, only the attributes actually present in the payload are written,
-     * so an omitted field keeps its stored value.
-     *
      * @return array<string, mixed>
      */
     public function rules(): array
@@ -44,9 +38,6 @@ final class UpdateTaskRequest extends ApiRequest
         $this->normalizeBooleans(['is_completed']);
     }
 
-    /**
-     * The validated payload as a domain object.
-     */
     public function toData(): TaskData
     {
         return TaskData::fromValidated($this->validated());

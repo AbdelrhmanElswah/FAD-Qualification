@@ -17,12 +17,6 @@ use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
-/**
- * Translates every exception raised on an API route into the shared error envelope.
- *
- * Registered in bootstrap/app.php. Returning null hands the exception back to
- * Laravel's default handling, which is what we want for non-API requests.
- */
 final class ApiExceptionRenderer
 {
     use SendsErrorResponses;
@@ -58,9 +52,6 @@ final class ApiExceptionRenderer
         };
     }
 
-    /**
-     * Never leak internals in production, but stay debuggable locally.
-     */
     private function unexpectedFailureMessage(Throwable $e): string
     {
         return config('app.debug') === true

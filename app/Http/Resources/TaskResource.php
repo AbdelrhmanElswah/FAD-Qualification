@@ -9,9 +9,6 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 /**
- * The public representation of a task. Keeping serialisation here means the
- * database schema can change without breaking the API contract.
- *
  * @mixin Task
  */
 final class TaskResource extends JsonResource

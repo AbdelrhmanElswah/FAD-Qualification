@@ -34,7 +34,7 @@ List endpoints add `links` and `meta` from the paginator alongside `data`.
 }
 ```
 
-`errors` is present only when there is field-level detail to report — a 404 or 500 omits it.
+`errors` is present only when there is field-level detail to report. A 404 or 500 omits it.
 
 ## The task object
 
@@ -164,7 +164,7 @@ Responds `201` with the created task. Validation failure returns `422`:
 
 Both verbs hit the same action. The difference is only in validation:
 
-- **`PUT`** treats `title` as required — you state the title the task should end up with.
+- **`PUT`** treats `title` as required.
 - **`PATCH`** makes every field optional, for partial updates.
 
 In both cases **only the fields present in the payload are written**, so omitting

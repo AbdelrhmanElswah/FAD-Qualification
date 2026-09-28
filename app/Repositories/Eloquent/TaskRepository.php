@@ -42,8 +42,6 @@ final class TaskRepository extends BaseRepository implements TaskRepositoryInter
     }
 
     /**
-     * Match the term against every searchable column.
-     *
      * @param  Builder<Task>  $query
      */
     private function applySearch(Builder $query, string $term): void

@@ -11,9 +11,6 @@ use Illuminate\Validation\Rule;
 
 final class IndexTaskRequest extends ApiRequest
 {
-    /**
-     * Default and maximum page sizes for the listing endpoint.
-     */
     private const int DEFAULT_PER_PAGE = 15;
 
     private const int MAX_PER_PAGE = 100;
@@ -48,17 +45,11 @@ final class IndexTaskRequest extends ApiRequest
         $this->normalizeBooleans(['is_completed']);
     }
 
-    /**
-     * The filters requested by the client.
-     */
     public function filters(): TaskFilters
     {
         return TaskFilters::fromValidated($this->validated());
     }
 
-    /**
-     * The requested page size, clamped to a sane range.
-     */
     public function perPage(): int
     {
         return (int) $this->validated('per_page', self::DEFAULT_PER_PAGE);
