@@ -1,7 +1,7 @@
 {
   "info": {
-    "name": "FAD Qualification - Tasks API",
-    "description": "REST API for a simple task management system.\n\nSet the `baseUrl` variable to match your environment. `taskId` is filled in automatically by the test script on \"Create Task\", so you can run the folder top to bottom.",
+    "name": "Tasks API",
+    "description": "REST API for a simple task management system.\n\nNo authentication is required. Set the `baseUrl` collection variable to match your environment; it defaults to the address used by `php artisan serve`. `taskId` is captured automatically by the test script on \"Create task\", so the collection can be run from top to bottom.\n\nEvery request below carries a saved example response.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -16,17 +16,25 @@
       "type": "string"
     }
   ],
-  "auth": null,
   "item": [
     {
       "name": "List tasks",
       "request": {
         "method": "GET",
-        "header": [{ "key": "Accept", "value": "application/json" }],
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
         "url": {
           "raw": "{{baseUrl}}/tasks",
-          "host": ["{{baseUrl}}"],
-          "path": ["tasks"]
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "tasks"
+          ]
         },
         "description": "Returns a paginated list of tasks, newest first."
       },
@@ -47,48 +55,186 @@
           }
         }
       ],
-      "response": []
+      "response": [
+        {
+          "name": "200 OK",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tasks",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tasks"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_preview_language": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"success\": true,\n    \"message\": \"Tasks retrieved successfully.\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"title\": \"Ship the tasks API\",\n            \"description\": \"Repository, service and resource layers.\",\n            \"is_completed\": false,\n            \"created_at\": \"2026-09-28T18:13:21+00:00\",\n            \"updated_at\": \"2026-09-28T18:13:21+00:00\"\n        },\n        {\n            \"id\": 2,\n            \"title\": \"Write the deployment runbook\",\n            \"description\": \"Cover rollback steps.\",\n            \"is_completed\": true,\n            \"created_at\": \"2026-09-28T18:13:21+00:00\",\n            \"updated_at\": \"2026-09-28T18:13:21+00:00\"\n        }\n    ],\n    \"links\": {\n        \"first\": \"http://fad-qualification.test/api/v1/tasks?page=1\",\n        \"last\": \"http://fad-qualification.test/api/v1/tasks?page=1\",\n        \"prev\": null,\n        \"next\": null\n    },\n    \"meta\": {\n        \"current_page\": 1,\n        \"from\": 1,\n        \"last_page\": 1,\n        \"links\": [\n            {\n                \"url\": null,\n                \"label\": \"&laquo; Previous\",\n                \"page\": null,\n                \"active\": false\n            },\n            {\n                \"url\": \"http://fad-qualification.test/api/v1/tasks?page=1\",\n                \"label\": \"1\",\n                \"page\": 1,\n                \"active\": true\n            },\n            {\n                \"url\": null,\n                \"label\": \"Next &raquo;\",\n                \"page\": null,\n                \"active\": false\n            }\n        ],\n        \"path\": \"http://fad-qualification.test/api/v1/tasks\",\n        \"per_page\": 15,\n        \"to\": 2,\n        \"total\": 2\n    }\n}"
+        }
+      ]
     },
     {
       "name": "List tasks (filtered, sorted, paginated)",
       "request": {
         "method": "GET",
-        "header": [{ "key": "Accept", "value": "application/json" }],
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
         "url": {
-          "raw": "{{baseUrl}}/tasks?search=&is_completed=false&sort_by=title&sort_direction=asc&per_page=10",
-          "host": ["{{baseUrl}}"],
-          "path": ["tasks"],
+          "raw": "{{baseUrl}}/tasks?is_completed=false&sort_by=title&sort_direction=asc&per_page=10",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "tasks"
+          ],
           "query": [
-            { "key": "search", "value": "", "description": "Partial match on title and description" },
-            { "key": "is_completed", "value": "false", "description": "true | false | 1 | 0" },
-            { "key": "sort_by", "value": "title", "description": "id | title | is_completed | created_at | updated_at" },
-            { "key": "sort_direction", "value": "asc", "description": "asc | desc" },
-            { "key": "per_page", "value": "10", "description": "1 to 100" }
+            {
+              "key": "is_completed",
+              "value": "false",
+              "description": "true | false | 1 | 0"
+            },
+            {
+              "key": "sort_by",
+              "value": "title",
+              "description": "id | title | is_completed | created_at | updated_at"
+            },
+            {
+              "key": "sort_direction",
+              "value": "asc",
+              "description": "asc | desc"
+            },
+            {
+              "key": "per_page",
+              "value": "10",
+              "description": "1 to 100"
+            },
+            {
+              "key": "search",
+              "value": "runbook",
+              "description": "Partial match on title and description",
+              "disabled": true
+            }
           ]
         },
-        "description": "Every query parameter is optional and validated."
+        "description": "Every query parameter is optional and validated. An unknown sort_by returns 422."
       },
-      "response": []
+      "response": [
+        {
+          "name": "200 OK",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tasks?is_completed=false&sort_by=title&sort_direction=asc&per_page=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tasks"
+              ],
+              "query": [
+                {
+                  "key": "is_completed",
+                  "value": "false",
+                  "description": "true | false | 1 | 0"
+                },
+                {
+                  "key": "sort_by",
+                  "value": "title",
+                  "description": "id | title | is_completed | created_at | updated_at"
+                },
+                {
+                  "key": "sort_direction",
+                  "value": "asc",
+                  "description": "asc | desc"
+                },
+                {
+                  "key": "per_page",
+                  "value": "10",
+                  "description": "1 to 100"
+                },
+                {
+                  "key": "search",
+                  "value": "runbook",
+                  "description": "Partial match on title and description",
+                  "disabled": true
+                }
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_preview_language": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"success\": true,\n    \"message\": \"Tasks retrieved successfully.\",\n    \"data\": [\n        {\n            \"id\": 1,\n            \"title\": \"Ship the tasks API\",\n            \"description\": \"Repository, service and resource layers.\",\n            \"is_completed\": false,\n            \"created_at\": \"2026-09-28T18:13:21+00:00\",\n            \"updated_at\": \"2026-09-28T18:13:21+00:00\"\n        }\n    ],\n    \"links\": {\n        \"first\": \"http://fad-qualification.test/api/v1/tasks?is_completed=false&sort_by=title&sort_direction=asc&per_page=10&page=1\",\n        \"last\": \"http://fad-qualification.test/api/v1/tasks?is_completed=false&sort_by=title&sort_direction=asc&per_page=10&page=1\",\n        \"prev\": null,\n        \"next\": null\n    },\n    \"meta\": {\n        \"current_page\": 1,\n        \"from\": 1,\n        \"last_page\": 1,\n        \"links\": [\n            {\n                \"url\": null,\n                \"label\": \"&laquo; Previous\",\n                \"page\": null,\n                \"active\": false\n            },\n            {\n                \"url\": \"http://fad-qualification.test/api/v1/tasks?is_completed=false&sort_by=title&sort_direction=asc&per_page=10&page=1\",\n                \"label\": \"1\",\n                \"page\": 1,\n                \"active\": true\n            },\n            {\n                \"url\": null,\n                \"label\": \"Next &raquo;\",\n                \"page\": null,\n                \"active\": false\n            }\n        ],\n        \"path\": \"http://fad-qualification.test/api/v1/tasks\",\n        \"per_page\": 10,\n        \"to\": 1,\n        \"total\": 1\n    }\n}"
+        }
+      ]
     },
     {
       "name": "Create task",
       "request": {
         "method": "POST",
         "header": [
-          { "key": "Accept", "value": "application/json" },
-          { "key": "Content-Type", "value": "application/json" }
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n    \"title\": \"Ship the tasks API\",\n    \"description\": \"Repository, service and resource layers.\",\n    \"is_completed\": false\n}",
-          "options": { "raw": { "language": "json" } }
+          "raw": "{\n    \"title\": \"Ship the tasks API\",\n    \"description\": \"Repository, service and resource layers.\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
         },
         "url": {
           "raw": "{{baseUrl}}/tasks",
-          "host": ["{{baseUrl}}"],
-          "path": ["tasks"]
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "tasks"
+          ]
         },
-        "description": "title is required (3-255 chars). description and is_completed are optional."
+        "description": "title is required (3-255 characters). description and is_completed are optional."
       },
       "event": [
         {
@@ -109,27 +255,87 @@
           }
         }
       ],
-      "response": []
+      "response": [
+        {
+          "name": "201 Created",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Ship the tasks API\",\n    \"description\": \"Repository, service and resource layers.\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tasks",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tasks"
+              ]
+            }
+          },
+          "status": "Created",
+          "code": 201,
+          "_postman_preview_language": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"success\": true,\n    \"message\": \"Task created successfully.\",\n    \"data\": {\n        \"id\": 1,\n        \"title\": \"Ship the tasks API\",\n        \"description\": \"Repository, service and resource layers.\",\n        \"is_completed\": false,\n        \"created_at\": \"2026-09-28T18:13:21+00:00\",\n        \"updated_at\": \"2026-09-28T18:13:21+00:00\"\n    }\n}"
+        }
+      ]
     },
     {
-      "name": "Create task - validation error (422)",
+      "name": "Create task - validation error",
       "request": {
         "method": "POST",
         "header": [
-          { "key": "Accept", "value": "application/json" },
-          { "key": "Content-Type", "value": "application/json" }
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
         ],
         "body": {
           "mode": "raw",
           "raw": "{\n    \"title\": \"x\",\n    \"is_completed\": \"maybe\"\n}",
-          "options": { "raw": { "language": "json" } }
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
         },
         "url": {
           "raw": "{{baseUrl}}/tasks",
-          "host": ["{{baseUrl}}"],
-          "path": ["tasks"]
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "tasks"
+          ]
         },
-        "description": "Demonstrates the error envelope: title is too short and is_completed is not a boolean."
+        "description": "Shows the error envelope: the title is too short and is_completed is not a boolean."
       },
       "event": [
         {
@@ -148,18 +354,75 @@
           }
         }
       ],
-      "response": []
+      "response": [
+        {
+          "name": "422 Unprocessable Entity",
+          "originalRequest": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"x\",\n    \"is_completed\": \"maybe\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tasks",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tasks"
+              ]
+            }
+          },
+          "status": "Unprocessable Entity",
+          "code": 422,
+          "_postman_preview_language": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"success\": false,\n    \"message\": \"The given data was invalid.\",\n    \"errors\": {\n        \"title\": [\n            \"The title field must be at least 3 characters.\"\n        ],\n        \"is_completed\": [\n            \"The is completed field must be true or false.\"\n        ]\n    }\n}"
+        }
+      ]
     },
     {
       "name": "Get task",
       "request": {
         "method": "GET",
-        "header": [{ "key": "Accept", "value": "application/json" }],
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
         "url": {
           "raw": "{{baseUrl}}/tasks/{{taskId}}",
-          "host": ["{{baseUrl}}"],
-          "path": ["tasks", "{{taskId}}"]
-        }
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "tasks",
+            "{{taskId}}"
+          ]
+        },
+        "description": "Fetch a single task by id."
       },
       "event": [
         {
@@ -176,18 +439,63 @@
           }
         }
       ],
-      "response": []
+      "response": [
+        {
+          "name": "200 OK",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tasks/{{taskId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tasks",
+                "{{taskId}}"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_preview_language": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"success\": true,\n    \"message\": \"Task retrieved successfully.\",\n    \"data\": {\n        \"id\": 1,\n        \"title\": \"Ship the tasks API\",\n        \"description\": \"Repository, service and resource layers.\",\n        \"is_completed\": false,\n        \"created_at\": \"2026-09-28T18:13:21+00:00\",\n        \"updated_at\": \"2026-09-28T18:13:21+00:00\"\n    }\n}"
+        }
+      ]
     },
     {
-      "name": "Get task - not found (404)",
+      "name": "Get task - not found",
       "request": {
         "method": "GET",
-        "header": [{ "key": "Accept", "value": "application/json" }],
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
         "url": {
           "raw": "{{baseUrl}}/tasks/424242",
-          "host": ["{{baseUrl}}"],
-          "path": ["tasks", "424242"]
-        }
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "tasks",
+            "424242"
+          ]
+        },
+        "description": "A task id that does not exist returns 404."
       },
       "event": [
         {
@@ -201,25 +509,74 @@
           }
         }
       ],
-      "response": []
+      "response": [
+        {
+          "name": "404 Not Found",
+          "originalRequest": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tasks/424242",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tasks",
+                "424242"
+              ]
+            }
+          },
+          "status": "Not Found",
+          "code": 404,
+          "_postman_preview_language": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"success\": false,\n    \"message\": \"Task [424242] was not found.\"\n}"
+        }
+      ]
     },
     {
       "name": "Update task (PUT)",
       "request": {
         "method": "PUT",
         "header": [
-          { "key": "Accept", "value": "application/json" },
-          { "key": "Content-Type", "value": "application/json" }
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
         ],
         "body": {
           "mode": "raw",
           "raw": "{\n    \"title\": \"Ship the tasks API v2\",\n    \"description\": \"Now with docs and a Postman collection.\",\n    \"is_completed\": true\n}",
-          "options": { "raw": { "language": "json" } }
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
         },
         "url": {
           "raw": "{{baseUrl}}/tasks/{{taskId}}",
-          "host": ["{{baseUrl}}"],
-          "path": ["tasks", "{{taskId}}"]
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "tasks",
+            "{{taskId}}"
+          ]
         },
         "description": "PUT requires title. Fields you omit keep their stored value; send description as null to clear it."
       },
@@ -239,27 +596,89 @@
           }
         }
       ],
-      "response": []
+      "response": [
+        {
+          "name": "200 OK",
+          "originalRequest": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"title\": \"Ship the tasks API v2\",\n    \"description\": \"Now with docs and a Postman collection.\",\n    \"is_completed\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tasks/{{taskId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tasks",
+                "{{taskId}}"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_preview_language": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"success\": true,\n    \"message\": \"Task updated successfully.\",\n    \"data\": {\n        \"id\": 1,\n        \"title\": \"Ship the tasks API v2\",\n        \"description\": \"Now with docs and a Postman collection.\",\n        \"is_completed\": true,\n        \"created_at\": \"2026-09-28T18:13:21+00:00\",\n        \"updated_at\": \"2026-09-28T18:13:21+00:00\"\n    }\n}"
+        }
+      ]
     },
     {
       "name": "Update task partially (PATCH)",
       "request": {
         "method": "PATCH",
         "header": [
-          { "key": "Accept", "value": "application/json" },
-          { "key": "Content-Type", "value": "application/json" }
+          {
+            "key": "Accept",
+            "value": "application/json"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
         ],
         "body": {
           "mode": "raw",
           "raw": "{\n    \"is_completed\": false\n}",
-          "options": { "raw": { "language": "json" } }
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
         },
         "url": {
           "raw": "{{baseUrl}}/tasks/{{taskId}}",
-          "host": ["{{baseUrl}}"],
-          "path": ["tasks", "{{taskId}}"]
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "tasks",
+            "{{taskId}}"
+          ]
         },
-        "description": "PATCH makes every field optional, so the title and description are left as they are."
+        "description": "PATCH makes every field optional, so the title and description are left untouched."
       },
       "event": [
         {
@@ -277,18 +696,76 @@
           }
         }
       ],
-      "response": []
+      "response": [
+        {
+          "name": "200 OK",
+          "originalRequest": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"is_completed\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/tasks/{{taskId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tasks",
+                "{{taskId}}"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_preview_language": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"success\": true,\n    \"message\": \"Task updated successfully.\",\n    \"data\": {\n        \"id\": 1,\n        \"title\": \"Ship the tasks API v2\",\n        \"description\": \"Now with docs and a Postman collection.\",\n        \"is_completed\": false,\n        \"created_at\": \"2026-09-28T18:13:21+00:00\",\n        \"updated_at\": \"2026-09-28T18:13:21+00:00\"\n    }\n}"
+        }
+      ]
     },
     {
       "name": "Delete task",
       "request": {
         "method": "DELETE",
-        "header": [{ "key": "Accept", "value": "application/json" }],
+        "header": [
+          {
+            "key": "Accept",
+            "value": "application/json"
+          }
+        ],
         "url": {
           "raw": "{{baseUrl}}/tasks/{{taskId}}",
-          "host": ["{{baseUrl}}"],
-          "path": ["tasks", "{{taskId}}"]
-        }
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "tasks",
+            "{{taskId}}"
+          ]
+        },
+        "description": "Deletes the task and confirms with a message."
       },
       "event": [
         {
@@ -306,7 +783,41 @@
           }
         }
       ],
-      "response": []
+      "response": [
+        {
+          "name": "200 OK",
+          "originalRequest": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Accept",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/tasks/{{taskId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tasks",
+                "{{taskId}}"
+              ]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "_postman_preview_language": "json",
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "cookie": [],
+          "body": "{\n    \"success\": true,\n    \"message\": \"Task deleted successfully.\"\n}"
+        }
+      ]
     }
   ]
 }
