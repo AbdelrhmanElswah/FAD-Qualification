@@ -1,6 +1,6 @@
 # Tasks API Reference
 
-Base URL: `http://fad-qualification.test/api/v1`
+Base URL: `http://localhost:8000/api/v1` (after `php artisan serve`)
 
 All requests and responses are JSON. Send `Accept: application/json` so validation and
 error responses come back in the envelope described below rather than as HTML.
