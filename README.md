@@ -21,12 +21,15 @@ A task is `id`, `title`, `description`, `is_completed`, plus `created_at` / `upd
 
 ```bash
 composer install
-cp .env.example .env
+cp .env.example .env         # Windows: copy .env.example .env
 php artisan key:generate
-touch database/database.sqlite   # SQLite is the default connection
-php artisan migrate --seed       # --seed is optional, it adds 17 sample tasks
+php artisan migrate --seed   # creates database/database.sqlite when prompted;
+                             # --seed is optional and adds 17 sample tasks
 php artisan serve
 ```
+
+SQLite is the default connection, so there is nothing else to configure. The API is
+then served at `http://localhost:8000/api/v1/tasks`.
 
 Run the suite with `php artisan test` and the formatter with `vendor/bin/pint`.
 
